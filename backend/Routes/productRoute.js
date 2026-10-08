@@ -1,0 +1,10 @@
+import express from "express";
+import { getProducts, getProduct, createProduct, updateProduct, deleteProduct } from "../controller/productController.js";
+import { isAuthenticated, isAdmin } from "../middleware/isAuthenticated.js";
+const router = express.Router();
+router.get("/", getProducts);
+router.get("/:id", getProduct);
+router.post("/", isAuthenticated, isAdmin, createProduct);
+router.put("/:id", isAuthenticated, isAdmin, updateProduct);
+router.delete("/:id", isAuthenticated, isAdmin, deleteProduct);
+export default router;
