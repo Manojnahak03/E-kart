@@ -29,18 +29,23 @@ export default function Navbar() {
 
   const [open, setOpen] = useState(false);
 
+  // ================= LOGOUT =================
   const logout = async () => {
     try {
       await api.post("/user/logout");
-    } catch (error) {}
+    } catch (error) {
+      // Even if backend logout fails, clear local session
+    }
 
     localStorage.removeItem("accessToken");
     dispatch(setUser(null));
 
-    toast.success("Logged out");
+    toast.success("Logged out successfully");
+    setOpen(false);
     navigate("/");
   };
 
+  // ================= CLOSE MENU =================
   const closeMenu = () => {
     setOpen(false);
   };
@@ -48,18 +53,16 @@ export default function Navbar() {
   return (
     <header className="fixed top-0 inset-x-0 z-50 bg-white/95 backdrop-blur-lg border-b border-gray-200">
 
-      {/* Smaller Navbar */}
-      <div className="max-w-7xl mx-auto px-4 h-14 flex items-center justify-between">
+      {/* ================= NAVBAR CONTAINER ================= */}
+      <div className="max-w-7xl mx-auto px-3 sm:px-4 h-14 flex items-center justify-between">
 
         {/* ================= LOGO ================= */}
-
         <Link
           to="/"
           onClick={closeMenu}
           className="flex items-center shrink-0"
         >
-          {/* Rectangle image cropped inside circle */}
-          <div className="w-10 h-10 rounded-full overflow-hidden border border-gray-200 shadow-sm bg-white flex items-center justify-center">
+          <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-full overflow-hidden border border-gray-200 shadow-sm bg-white flex items-center justify-center">
             <img
               src={logo}
               alt="ManojMart"
@@ -68,9 +71,7 @@ export default function Navbar() {
           </div>
         </Link>
 
-
-        {/* ================= NAVIGATION ================= */}
-
+        {/* ================= DESKTOP / MOBILE NAVIGATION ================= */}
         <nav
           className={`
             ${open ? "flex" : "hidden"}
@@ -95,7 +96,7 @@ export default function Navbar() {
             md:shadow-none
           `}
         >
-
+          {/* Home */}
           <Link
             onClick={closeMenu}
             className="text-sm font-semibold text-gray-700 hover:text-blue-600 transition"
@@ -104,6 +105,7 @@ export default function Navbar() {
             Home
           </Link>
 
+          {/* Products */}
           <Link
             onClick={closeMenu}
             className="text-sm font-semibold text-gray-700 hover:text-blue-600 transition"
@@ -112,6 +114,7 @@ export default function Navbar() {
             Products
           </Link>
 
+          {/* Dashboard */}
           <Link
             onClick={closeMenu}
             className="text-sm font-semibold text-gray-700 hover:text-blue-600 transition"
@@ -120,6 +123,7 @@ export default function Navbar() {
             Dashboard
           </Link>
 
+          {/* Profile */}
           {user && (
             <Link
               onClick={closeMenu}
@@ -130,6 +134,7 @@ export default function Navbar() {
             </Link>
           )}
 
+          {/* Admin */}
           {user?.role === "admin" && (
             <Link
               onClick={closeMenu}
@@ -139,19 +144,15 @@ export default function Navbar() {
               Admin
             </Link>
           )}
-
         </nav>
 
-
         {/* ================= RIGHT SIDE ================= */}
-
         <div className="flex items-center gap-2">
 
-
-          {/* Cart */}
-
+          {/* ================= CART ================= */}
           <Link
             to="/cart"
+            onClick={closeMenu}
             className="relative w-9 h-9 rounded-lg border border-gray-200 flex items-center justify-center hover:bg-slate-50 transition"
           >
             <ShoppingCart className="w-4 h-4" />
@@ -163,51 +164,48 @@ export default function Navbar() {
             )}
           </Link>
 
-
-          {/* Logged In */}
+          {/* ================= USER / LOGIN ================= */}
 
           {user ? (
             <>
-
+              {/* Profile Button */}
               <Link
                 to="/profile"
-                className="hidden sm:flex items-center gap-2 px-3 py-1.5 rounded-lg bg-slate-100 text-sm font-semibold hover:bg-slate-200 transition"
+                onClick={closeMenu}
+                className="flex items-center gap-1.5 px-2 sm:px-3 py-1.5 rounded-lg bg-slate-100 text-xs sm:text-sm font-semibold hover:bg-slate-200 transition"
               >
                 <UserRound className="w-4 h-4" />
 
-                <span>
+                <span className="hidden sm:inline">
                   {user.firstName}
                 </span>
               </Link>
 
-
+              {/* Logout */}
               <button
                 onClick={logout}
-                className="hidden sm:flex w-9 h-9 rounded-lg bg-slate-950 text-white items-center justify-center hover:bg-slate-800 transition"
+                className="w-9 h-9 rounded-lg bg-slate-950 text-white flex items-center justify-center hover:bg-slate-800 transition"
                 title="Logout"
               >
                 <LogOut className="w-4 h-4" />
               </button>
-
             </>
-
           ) : (
-
+            /* ================= LOGIN BUTTON ================= */
             <Link
               to="/login"
-              className="hidden sm:block bg-slate-950 text-white px-4 py-1.5 rounded-lg text-sm font-bold hover:bg-slate-800 transition"
+              onClick={closeMenu}
+              className="bg-slate-950 text-white px-3 sm:px-4 py-1.5 rounded-lg text-xs sm:text-sm font-bold hover:bg-slate-800 transition whitespace-nowrap"
             >
               Login
             </Link>
-
           )}
 
-
-          {/* Mobile */}
-
+          {/* ================= MOBILE MENU BUTTON ================= */}
           <button
             onClick={() => setOpen(!open)}
             className="md:hidden w-9 h-9 border border-gray-200 rounded-lg flex items-center justify-center hover:bg-slate-50 transition"
+            aria-label="Toggle menu"
           >
             {open ? (
               <X className="w-4 h-4" />
@@ -217,7 +215,6 @@ export default function Navbar() {
           </button>
 
         </div>
-
       </div>
     </header>
   );
